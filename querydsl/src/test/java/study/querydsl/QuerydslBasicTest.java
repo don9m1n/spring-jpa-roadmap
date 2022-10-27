@@ -1,5 +1,6 @@
 package study.querydsl;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,8 @@ import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static study.querydsl.entity.QMember.member;
@@ -95,5 +98,40 @@ public class QuerydslBasicTest {
                 .fetchOne();
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void resultFetch() {
+
+        List<Member> members = query
+                .selectFrom(member)
+                .fetch();
+
+        Member member1 = query
+                .selectFrom(QMember.member)
+                .fetchFirst();
+
+        // limit(1).fetchOne() == fetchFirst()
+        Member member2 = query
+                .selectFrom(QMember.member)
+                .limit(1)
+                .fetchOne();
+
+
+        // fetchResults()는 deprecated..
+        QueryResults<Member> results = query
+                .selectFrom(member)
+                .fetchResults();
+
+        // fetchCount()도 deprecated..
+        long count1 = query
+                .selectFrom(member)
+                .fetchCount();
+
+        // fetchCount() 대신에 이렇게 쓰자!
+        Long count2 = query
+                .select(member.count())
+                .from(member)
+                .fetchOne();
     }
 }
