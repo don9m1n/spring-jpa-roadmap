@@ -162,4 +162,35 @@ public class QuerydslBasicTest {
         assertThat(member6.getUsername()).isEqualTo("member6");
         assertThat(memberNull.getUsername()).isNull();
     }
+
+    @Test
+    public void paging1() {
+        List<Member> result = query
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetch();
+
+        assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("count쿼리가 필요하면 따로 작성해서 사용하자")
+    public void paging2() {
+        List<Member> result = query
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1)
+                .limit(2)
+                .fetch();
+
+        Long count = query
+                .select(member.count())
+                .from(member)
+                .fetchOne();
+
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(count).isEqualTo(4L);
+    }
 }
