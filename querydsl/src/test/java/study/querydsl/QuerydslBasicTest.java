@@ -70,4 +70,30 @@ public class QuerydslBasicTest {
         assertThat(findMember.getAge()).isEqualTo(10);
         assertThat(findMember.getTeam().getName()).isEqualTo("teamA");
     }
+
+    @Test
+    public void searchV1() {
+        Member findMember = query
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1")
+                        .and(member.age.eq(10))
+                )
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void searchV2() {
+        Member findMember = query
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1"),
+                        member.age.eq(10)
+                )
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
 }
