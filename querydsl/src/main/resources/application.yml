@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://127.0.0.1:3306/querydsl?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Seoul
+    username: root
+    password: root
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        # show_sql: true
+        format_sql: true
+        use_sql_comments: true # 실행되는 JPQL을 출력
+
+logging:
+  level:
+    root: info
+    study.querydls: debug
+    org.hibernate.SQL: debug
