@@ -1,8 +1,12 @@
 package study.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -12,6 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -444,5 +450,187 @@ public class QuerydslBasicTest {
                 .fetchOne();
 
         System.out.println("member1 = " + member1);
+    }
+
+    @Test
+    public void tupleProjection() throws Exception {
+        List<Tuple> result = query
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            String username = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            System.out.println("username = " + username);
+            System.out.println("age = " + age);
+        }
+    }
+    
+    @Test
+    @DisplayName("순수 JPA에서 DTO 조회")
+    public void findDtoByJPQL() throws Exception {
+        List<MemberDto> result = em.createQuery(
+                "select new study.querydsl.dto.MemberDto(m.username, m.age) " +
+                        "from Member m", MemberDto.class)
+                .getResultList();
+    }
+
+    @Test
+    @DisplayName("프로퍼티에 접근해서 DTO 값 채우기")
+    public void findDtoByBean() throws Exception {
+        // setter가 필수적으로 필요한 방법!!
+        List<MemberDto> result = query
+                .select(Projections.bean(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+
+    @Test
+    @DisplayName("필드에 접근해서 DTO 값 채우기")
+    public void findDtoByFields() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections.fields(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+
+    @Test
+    @DisplayName("생성자에 접근해서 DTO 값 채우기")
+    public void findDtoByConstructor() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections.constructor(MemberDto.class,
+                        member.username, // 파라미터 순서 잘 지켜서 넣어야 함!
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+    
+    @Test
+    public void dtoProjection() throws Exception {
+        List<MemberDto> members = query.select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : members) {
+            System.out.println(member.getUsername());
+            System.out.println(member.getAge());
+        }
+    }
+    
+    @Test
+    public void dynamicQuery_BooleanBuilder() throws Exception {
+        String username = "member1";
+        Integer age = 10;
+
+        List<Member> result = searchMember1(username, age);
+        assertThat(result.size()).isEqualTo(4);
+    }
+
+    private List<Member> searchMember1(String usernameCond, Integer ageCond) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (usernameCond != null) {
+            builder.and(member.username.eq(usernameCond));
+        }
+
+        if (ageCond != null) {
+            builder.or(member.age.gt(ageCond));
+        }
+
+        return query
+                .selectFrom(member)
+                .where(builder)
+                .fetch();
+    }
+
+
+    @Test
+    public void dynamicQuery_WhereParam() throws Exception {
+        String username = "member1";
+        Integer age = 10;
+
+        List<Member> result = searchMember2(username, age);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    private List<Member> searchMember2(String username, Integer age) {
+        return query
+                .selectFrom(member)
+                .where(allEq(username, age))
+                .fetch();
+    }
+
+    private BooleanExpression usernameEq(String username) {
+        return username != null ? member.username.eq(username) : null;
+    }
+
+    private BooleanExpression ageEq(Integer age) {
+        return age != null ? member.age.eq(age) : null;
+    }
+
+    private BooleanExpression allEq(String username, Integer age) {
+        return usernameEq(username).and(ageEq(age));
+    }
+
+    @Test
+    public void bulkUpdate() throws Exception {
+        long count = query
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void bulkDelete() throws Exception {
+        long count = query
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void sqlFunction() throws Exception {
+        String result = query
+                .select(Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetchFirst();
+
+        System.out.println("result = " + result);
+    }
+
+    @Test
+    public void sqlFunction2() throws Exception {
+        List<String> result = query
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .fetch();
     }
 }
