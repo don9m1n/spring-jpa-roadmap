@@ -3,6 +3,7 @@ package study.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import study.querydsl.dto.MemberDto;
+import study.querydsl.dto.QMemberDto;
 import study.querydsl.entity.Member;
 import study.querydsl.entity.QMember;
 import study.querydsl.entity.QTeam;
@@ -444,5 +447,90 @@ public class QuerydslBasicTest {
                 .fetchOne();
 
         System.out.println("member1 = " + member1);
+    }
+
+    @Test
+    public void tupleProjection() throws Exception {
+        List<Tuple> result = query
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        for (Tuple tuple : result) {
+            String username = tuple.get(member.username);
+            Integer age = tuple.get(member.age);
+            System.out.println("username = " + username);
+            System.out.println("age = " + age);
+        }
+    }
+    
+    @Test
+    @DisplayName("순수 JPA에서 DTO 조회")
+    public void findDtoByJPQL() throws Exception {
+        List<MemberDto> result = em.createQuery(
+                "select new study.querydsl.dto.MemberDto(m.username, m.age) " +
+                        "from Member m", MemberDto.class)
+                .getResultList();
+    }
+
+    @Test
+    @DisplayName("프로퍼티에 접근해서 DTO 값 채우기")
+    public void findDtoByBean() throws Exception {
+        // setter가 필수적으로 필요한 방법!!
+        List<MemberDto> result = query
+                .select(Projections.bean(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+
+    @Test
+    @DisplayName("필드에 접근해서 DTO 값 채우기")
+    public void findDtoByFields() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections.fields(MemberDto.class,
+                        member.username,
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+
+    @Test
+    @DisplayName("생성자에 접근해서 DTO 값 채우기")
+    public void findDtoByConstructor() throws Exception {
+        List<MemberDto> result = query
+                .select(Projections.constructor(MemberDto.class,
+                        member.username, // 파라미터 순서 잘 지켜서 넣어야 함!
+                        member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : result) {
+            System.out.println("이름 : " + member.getUsername());
+            System.out.println("나이 : " + member.getAge());
+        }
+    }
+    
+    @Test
+    public void dtoProjection() throws Exception {
+        List<MemberDto> members = query.select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .fetch();
+
+        for (MemberDto member : members) {
+            System.out.println(member.getUsername());
+            System.out.println(member.getAge());
+        }
     }
 }
