@@ -590,4 +590,28 @@ public class QuerydslBasicTest {
     private BooleanExpression allEq(String username, Integer age) {
         return usernameEq(username).and(ageEq(age));
     }
+
+    @Test
+    public void bulkUpdate() throws Exception {
+        long count = query
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
+    @Test
+    public void bulkDelete() throws Exception {
+        long count = query
+                .delete(member)
+                .where(member.age.gt(18))
+                .execute();
+
+        em.flush();
+        em.clear();
+    }
+
 }
