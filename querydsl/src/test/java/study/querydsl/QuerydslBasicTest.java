@@ -614,4 +614,23 @@ public class QuerydslBasicTest {
         em.clear();
     }
 
+    @Test
+    public void sqlFunction() throws Exception {
+        String result = query
+                .select(Expressions.stringTemplate("function('replace', {0}, {1}, {2})",
+                        member.username, "member", "M"))
+                .from(member)
+                .fetchFirst();
+
+        System.out.println("result = " + result);
+    }
+
+    @Test
+    public void sqlFunction2() throws Exception {
+        List<String> result = query
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq(Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .fetch();
+    }
 }
