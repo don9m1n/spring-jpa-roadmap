@@ -31,7 +31,7 @@ class MemberRepositoryTest {
 
         Long saveId = memberRepository.save(member);
 
-        Member findMember = memberRepository.find(saveId);
+        Member findMember = memberRepository.findOne(saveId);
         findMember.changeName("손흥민");
 
         // Auditing을 통해 update된 시간은 바로 적용이 안됨..
@@ -42,5 +42,17 @@ class MemberRepositoryTest {
         assertThat(findMember.getName()).isEqualTo(member.getName());
         assertThat(findMember).isEqualTo(member);
         assertThat(findMember.getUpdatedDate()).isAfter(findMember.getCreatedDate());
+    }
+
+    @Test
+    public void count() throws Exception {
+        Member member = Member.builder()
+                .name("이강인")
+                .build();
+
+        memberRepository.save(member);
+
+        Long count = memberRepository.count(member.getName());
+        assertThat(count).isEqualTo(1);
     }
 }
