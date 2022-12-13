@@ -28,4 +28,8 @@ public class Delivery extends BaseEntity {
 
     @Enumerated(STRING)
     private DeliveryStatus status;
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
 }

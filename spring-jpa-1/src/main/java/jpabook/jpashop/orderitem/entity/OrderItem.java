@@ -31,4 +31,29 @@ public class OrderItem extends BaseEntity {
     private Item item;
     private int orderPrice; // 주문 당시 가격 (가격은 변경 가능성이 있기 때문에!)
     private int count; // 주문 당시 수량
+
+    public OrderItem(Item item, int orderPrice, int count) {
+        this.item = item;
+        this.orderPrice = orderPrice;
+        this.count = count;
+    }
+
+    public static OrderItem createOrderItem(Item item, int orderPrice, int count) {
+        OrderItem orderItem = new OrderItem(item, orderPrice, count);
+
+        item.removeStock(count);
+        return orderItem;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public void cancel() {
+        getItem().addStock(count);
+    }
+
+    public int getTotalPrice() {
+        return orderPrice * count;
+    }
 }
