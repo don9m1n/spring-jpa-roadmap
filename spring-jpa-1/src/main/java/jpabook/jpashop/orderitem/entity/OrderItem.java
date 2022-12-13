@@ -3,6 +3,7 @@ package jpabook.jpashop.orderitem.entity;
 import jpabook.jpashop.base.entity.BaseEntity;
 import jpabook.jpashop.item.entity.Item;
 import jpabook.jpashop.order.entity.Order;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +18,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder
 public class OrderItem extends BaseEntity {
