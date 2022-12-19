@@ -14,8 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderService {
 
@@ -24,6 +26,7 @@ public class OrderService {
     private final ItemRepository itemRepository;
 
     // 주문
+    @Transactional
     public Long order(Long memberId, Long itemId, int count) {
         Member member = memberRepository.findOne(memberId);
         Item item = itemRepository.findOne(itemId);
@@ -40,7 +43,16 @@ public class OrderService {
     }
 
     // 주문 취소
+    @Transactional
+    public void cancelOrder(Long id) {
+        Order order = orderRepository.findOne(id);
+        order.cancel();
+    }
 
     // 주문 검색
-
+    /**
+    public List<Order> findOrders(OrderSearch orderSearch) {
+        return orderRepository.findAll(orderSearch);
+    }
+     */
 }
