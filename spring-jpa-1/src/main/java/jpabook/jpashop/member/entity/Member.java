@@ -4,6 +4,7 @@ import jpabook.jpashop.base.data.Address;
 import jpabook.jpashop.base.entity.BaseEntity;
 import jpabook.jpashop.order.entity.Order;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -26,6 +27,7 @@ public class Member extends BaseEntity {
     @Embedded
     private Address address;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
