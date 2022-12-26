@@ -20,6 +20,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @GetMapping
+    public String list(Model model) {
+        // 화면에 맞는 필드만 가진 DTO 객체를 만들어서 출력하는 것이 좋다.
+        model.addAttribute("members", memberService.findMembers());
+        return "members/member-list";
+    }
+
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("memberForm", new MemberForm());
