@@ -1,10 +1,8 @@
 package jpabook.jpashop.item.base;
 
+import jpabook.jpashop.item.controller.BookForm;
 import jpabook.jpashop.item.entity.Item;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.DiscriminatorValue;
@@ -12,7 +10,7 @@ import javax.persistence.Entity;
 
 @Entity
 @Getter
-@Setter
+@Setter(AccessLevel.PRIVATE)
 @DiscriminatorValue("B")
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +18,16 @@ import javax.persistence.Entity;
 public class Book extends Item {
     private String author;
     private String isbn;
+
+    // 정적 팩토리 메서드
+    public static Book createBook(BookForm form) {
+        Book book = new Book();
+        book.setName(form.getName());
+        book.setPrice(form.getPrice());
+        book.setStockQuantity(form.getStockQuantity());
+        book.setAuthor(form.getAuthor());
+        book.setIsbn(form.getIsbn());
+
+        return book;
+    }
 }

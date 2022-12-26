@@ -3,9 +3,7 @@ package jpabook.jpashop.item.entity;
 import jpabook.jpashop.base.entity.BaseEntity;
 import jpabook.jpashop.category.entity.Category;
 import jpabook.jpashop.exception.NotEnoughStockException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.DiscriminatorColumn;
@@ -20,6 +18,7 @@ import static javax.persistence.InheritanceType.SINGLE_TABLE;
 
 @Entity
 @Getter
+@Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = SINGLE_TABLE)
