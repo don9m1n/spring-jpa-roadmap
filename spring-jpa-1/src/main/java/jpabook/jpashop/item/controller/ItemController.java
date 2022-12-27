@@ -31,7 +31,7 @@ public class ItemController {
     public String create(BookForm form) {
         Book book = Book.createBook(form);
         itemService.saveItem(book);
-        return "redirect:/items";
+        return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
@@ -48,6 +48,6 @@ public class ItemController {
     public String update(@ModelAttribute("form") BookForm form) {
         itemService.changeItem(form);
 
-        return "redirect:/items";
+        return "redirect:/";
     }
 }
