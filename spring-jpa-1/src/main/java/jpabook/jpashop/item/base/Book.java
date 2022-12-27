@@ -30,4 +30,11 @@ public class Book extends Item {
 
         return book;
     }
+
+    // 변경 메서드
+    public void changeBook(BookForm form) {
+        super.changeItem(form.getName(), form.getPrice(), form.getStockQuantity());
+        this.author = form.getAuthor();
+        this.isbn = form.getIsbn();
+    }
 }

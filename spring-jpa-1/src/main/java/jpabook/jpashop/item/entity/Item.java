@@ -33,6 +33,12 @@ public abstract class Item extends BaseEntity {
     @ManyToMany(mappedBy = "items")
     private List<Category> categories = new ArrayList<>();
 
+    public void changeItem(String name, int price, int stockQuantity) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+
     // 재고 추가
     public void addStock(int quantity) {
         this.stockQuantity += quantity;
