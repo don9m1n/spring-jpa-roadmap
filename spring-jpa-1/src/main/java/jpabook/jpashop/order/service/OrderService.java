@@ -8,6 +8,7 @@ import jpabook.jpashop.item.repository.ItemRepository;
 import jpabook.jpashop.member.entity.Member;
 import jpabook.jpashop.member.repository.MemberRepository;
 import jpabook.jpashop.order.entity.Order;
+import jpabook.jpashop.order.entity.OrderSearch;
 import jpabook.jpashop.order.repository.OrderRepository;
 import jpabook.jpashop.orderitem.entity.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -50,9 +51,7 @@ public class OrderService {
     }
 
     // 주문 검색
-    /**
     public List<Order> findOrders(OrderSearch orderSearch) {
-        return orderRepository.findAll(orderSearch);
+        return orderRepository.findAllByString(orderSearch);
     }
-     */
 }

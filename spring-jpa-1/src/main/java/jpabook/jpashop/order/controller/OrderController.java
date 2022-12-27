@@ -6,12 +6,14 @@ import jpabook.jpashop.item.service.ItemService;
 import jpabook.jpashop.member.entity.Member;
 import jpabook.jpashop.member.service.MemberService;
 import jpabook.jpashop.order.entity.Order;
+import jpabook.jpashop.order.entity.OrderSearch;
 import jpabook.jpashop.order.service.OrderService;
 import jpabook.jpashop.orderitem.entity.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +26,14 @@ public class OrderController {
     private final OrderService orderService;
     private final MemberService memberService;
     private final ItemService itemService;
+
+    @GetMapping("/orders")
+    public String orderList(@ModelAttribute("orderSearch") OrderSearch orderSearch, Model model) {
+        List<Order> orders = orderService.findOrders(orderSearch);
+        model.addAttribute("orders", orders);
+
+        return "order/order-list";
+    }
 
     @GetMapping("/order")
     public String createForm(Model model) {
