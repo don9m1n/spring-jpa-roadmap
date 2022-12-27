@@ -16,6 +16,12 @@ public class ItemController {
 
     private final ItemService itemService;
 
+    @GetMapping
+    public String list(Model model) {
+        model.addAttribute("items", itemService.findItems());
+        return "items/item-list";
+    }
+
     @GetMapping("/new")
     public String createForm(Model model) {
         model.addAttribute("form", new BookForm());
@@ -26,6 +32,6 @@ public class ItemController {
     public String create(BookForm form) {
         Book book = Book.createBook(form);
         itemService.saveItem(book);
-        return "redirect:/";
+        return "redirect:/items";
     }
 }
