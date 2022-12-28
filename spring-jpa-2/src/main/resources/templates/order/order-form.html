@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<body>
+<div class="container">
+    <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+    <form role="form" action="/order" method="post">
+        <div class="form-group">
+            <label th:for="member">주문자</label>
+            <select name="memberId" id="member" class="form-control">
+                <option value="">==주문자 선택==</option>
+                <option th:each="member : ${members}"
+                        th:value="${member.id}"
+                        th:text="${member.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label th:for="item">상품명</label>
+            <select name="itemId" id="item" class="form-control">
+                <option value="">==주문 상품 선택==</option>
+                <option th:each="item : ${items}"
+                        th:value="${item.id}"
+                        th:text="${item.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label th:for="count">수량</label>
+            <input type="number" name="count" class="form-control" placeholder="수량을 입력하세요">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <br/>
+    <div th:replace="fragments/footer :: footer"></div>
+</div> <!-- /container -->
+</body>
+</html>
