@@ -25,7 +25,6 @@ import java.util.List;
 @SuperBuilder
 public class Member extends BaseEntity {
 
-    @NotEmpty
     private String name;
 
     @Embedded
