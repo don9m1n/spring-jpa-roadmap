@@ -19,6 +19,15 @@ public class Book extends Item {
     private String author;
     private String isbn;
 
+    public static Book create(String name, int price, int stockQuantity) {
+        Book book = new Book();
+        book.setName(name);
+        book.setPrice(price);
+        book.setStockQuantity(stockQuantity);
+
+        return book;
+    }
+
     // 정적 팩토리 메서드
     public static Book createBook(BookForm form) {
         Book book = new Book();
