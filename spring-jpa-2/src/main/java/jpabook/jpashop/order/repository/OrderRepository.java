@@ -24,6 +24,10 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
+    public List<Order> findAll() {
+        return em.createQuery("select o from Order o", Order.class)
+                .getResultList();
+    }
     /**
      * fetch join으로 필요한 데이터 한 번에 가져오기
      * LAZY 무시하고 진짜 객체에 값을 채워서 반환한다.
