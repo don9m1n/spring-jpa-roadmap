@@ -46,6 +46,16 @@ public class OrderSimpleApiController {
         return new Result<>(simpleOrders.size(), simpleOrders);
     }
 
+    @GetMapping("/v3/simple-orders")
+    public Result<List<SimpleOrderDto>> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery();
+        List<SimpleOrderDto> simpleOrders = orders.stream()
+                .map(SimpleOrderDto::new)
+                .collect(Collectors.toList());
+
+        return new Result<>(simpleOrders.size(), simpleOrders);
+    }
+
     /**
      * API 필드 이름은 dto의 필드 이름과 동일하다.
      * 엔티티로 반환할 때도 필드 이름을 변경할 수 있지만 그러지 말자..

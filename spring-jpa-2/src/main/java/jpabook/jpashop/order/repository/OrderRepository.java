@@ -24,6 +24,19 @@ public class OrderRepository {
         return em.find(Order.class, id);
     }
 
+    /**
+     * fetch join으로 필요한 데이터 한 번에 가져오기
+     * LAZY 무시하고 진짜 객체에 값을 채워서 반환한다.
+     * LAZY + 페치 조인으로 거의 대부분의 성능 문제를 해결할 수 있음
+      */
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery(
+                "select o from Order o " +
+                        "left join fetch o.member m " +
+                        "left join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
     public List<Order> findAllByString(OrderSearch orderSearch) {
         String jpql = "select o From Order o join o.member m";
         boolean isFirstCondition = true;
