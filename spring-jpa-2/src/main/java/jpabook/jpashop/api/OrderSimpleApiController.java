@@ -3,8 +3,10 @@ package jpabook.jpashop.api;
 import jpabook.jpashop.base.data.Address;
 import jpabook.jpashop.order.entity.Order;
 import jpabook.jpashop.order.entity.OrderSearch;
+import jpabook.jpashop.order.repository.OrderSimpleQueryDto;
 import jpabook.jpashop.order.entity.OrderStatus;
 import jpabook.jpashop.order.repository.OrderRepository;
+import jpabook.jpashop.order.repository.OrderSimpleQueryRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class OrderSimpleApiController {
 
     private final OrderRepository orderRepository;
+    private final OrderSimpleQueryRepository orderSimpleQueryRepository;
 
     @GetMapping("/v1/simple-orders")
     public List<Order> ordersV1() {
@@ -46,6 +49,11 @@ public class OrderSimpleApiController {
         return new Result<>(simpleOrders.size(), simpleOrders);
     }
 
+    /**
+     * 재사용 가능 -> 엔티티를 가져온다.
+     * 원하는 dto를 만들어서 값 세팅이 가능하다.
+     * V3, V4의 성능은 별 차이 없다. (V4가 아주 살짝 좋음)
+     * */
     @GetMapping("/v3/simple-orders")
     public Result<List<SimpleOrderDto>> ordersV3() {
         List<Order> orders = orderRepository.findAllWithMemberDelivery();
@@ -54,6 +62,15 @@ public class OrderSimpleApiController {
                 .collect(Collectors.toList());
 
         return new Result<>(simpleOrders.size(), simpleOrders);
+    }
+
+    /**
+     * 특정 API를 위한 방법 -> 재사용성 없음
+     */
+    @GetMapping("/v4/simple-orders")
+    public Result<List<OrderSimpleQueryDto>> ordersV4() {
+        List<OrderSimpleQueryDto> orderDtos = orderSimpleQueryRepository.findOrderDtos();
+        return new Result<>(orderDtos.size(), orderDtos);
     }
 
     /**
