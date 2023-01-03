@@ -27,7 +27,7 @@ public class Member extends BaseEntity {
     @Embedded
     private Address address;
 
-    @Builder.Default
+    //@Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 

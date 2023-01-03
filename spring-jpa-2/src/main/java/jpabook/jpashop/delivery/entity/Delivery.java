@@ -33,6 +33,10 @@ public class Delivery extends BaseEntity {
         this.order = order;
     }
 
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
     public void setAddressAndStatus(Address address, DeliveryStatus status) {
         this.address = address;
         this.status = status;
