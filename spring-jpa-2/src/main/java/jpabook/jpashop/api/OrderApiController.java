@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,34 @@ public class OrderApiController {
                 .collect(Collectors.toList());
     }
 
-    @Data
+    /**
+     * Fetch Join으로 필요한 엔티티 한 번에 가져오는 방식
+     * Fetch Join : 프록시 객체가 아닌 진짜 엔티티에 값을 담아서 가져오는 방식
+     */
+    @GetMapping("/v3/orders")
+    public List<OrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
+
+        List<OrderDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto dto = new OrderDto(order);
+            result.add(dto);
+        }
+
+        System.out.println(result.size());
+
+        return result;
+
+        /** Stream 방식
+         * return orders.stream()
+         * .map(OrderDto::new)
+         * .collect(Collectors.toList());
+         */
+    }
+
+
+
+        @Data
     static class OrderDto {
         private Long orderId;
         private String name; // 주문자
