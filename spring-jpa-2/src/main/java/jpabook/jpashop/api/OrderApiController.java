@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -60,20 +61,26 @@ public class OrderApiController {
             result.add(dto);
         }
 
-        System.out.println(result.size());
-
         return result;
-
-        /** Stream 방식
-         * return orders.stream()
-         * .map(OrderDto::new)
-         * .collect(Collectors.toList());
-         */
     }
 
+    @GetMapping("/v3.1/orders")
+    public List<OrderDto> ordersV3_page(
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "100") int limit) {
 
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
 
-        @Data
+        List<OrderDto> result = new ArrayList<>();
+        for (Order order : orders) {
+            OrderDto dto = new OrderDto(order);
+            result.add(dto);
+        }
+
+        return result;
+    }
+
+    @Data
     static class OrderDto {
         private Long orderId;
         private String name; // 주문자

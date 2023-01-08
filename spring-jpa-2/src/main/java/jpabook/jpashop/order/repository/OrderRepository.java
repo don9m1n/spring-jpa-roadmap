@@ -55,6 +55,22 @@ public class OrderRepository {
                 .getResultList();
     }
 
+    /**
+     * ToOne(OneToOne, ManyToOne) 관계를 모두 페치 조인으로 가져온다.
+     * ToOne 관계는 row를 증가시키지 않기 때문에 페이징 쿼리에 영향을 주지 않는다.
+      */
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o " +
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+
+
     public List<Order> findAllByString(OrderSearch orderSearch) {
         String jpql = "select o From Order o join o.member m";
         boolean isFirstCondition = true;
