@@ -6,6 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.member.entity.Member;
+import study.datajpa.member.entity.MemberDto;
+import study.datajpa.team.entity.Team;
+import study.datajpa.team.repository.TeamRepository;
 
 import java.util.List;
 
@@ -17,6 +20,9 @@ public class MemberRepositoryTest {
 
     @Autowired
     MemberRepository memberRepository;
+
+    @Autowired
+    TeamRepository teamRepository;
 
     @Test
     @Rollback(false)
@@ -108,5 +114,27 @@ public class MemberRepositoryTest {
         assertThat(names.get(0)).isEqualTo("유재석");
         assertThat(names.get(1)).isEqualTo("전소민");
         assertThat(names.get(2)).isEqualTo("박은빈");
+    }
+
+    @Test
+    void queryTest4() throws Exception {
+        Team teamA = new Team("T1");
+        Team teamB = new Team("DK");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("유재석", 40, teamA);
+        Member member2 = new Member("전소민", 38, teamB);
+        Member member3 = new Member("박은빈", 32, teamA);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        List<MemberDto> memberDtos = memberRepository.findMemberDto();
+
+        assertThat(memberDtos.size()).isEqualTo(3);
+        assertThat(memberDtos.get(0).getTeamName()).isEqualTo("T1");
+        assertThat(memberDtos.get(1).getTeamName()).isEqualTo("DK");
+        assertThat(memberDtos.get(2).getTeamName()).isEqualTo("T1");
     }
 }
