@@ -69,4 +69,28 @@ public class MemberRepositoryTest {
         assertThat(members.get(0).getAge()).isEqualTo(52);
         assertThat(members.get(0)).isEqualTo(member1);
     }
+
+    @Test
+    void queryTest1() throws Exception {
+        Member member1 = new Member("유재석", 40);
+        Member member2 = new Member("유재석", 38);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> members = memberRepository.findMember("유재석", 40);
+        assertThat(members.size()).isEqualTo(1);
+        assertThat(members.get(0).getAge()).isEqualTo(40);
+        assertThat(members.get(0)).isEqualTo(member1);
+    }
+
+    @Test
+    void queryTest2() throws Exception {
+        Member member1 = new Member("유재석", 40);
+        Member member2 = new Member("유재석", 38);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        List<Member> members = memberRepository.findMember("유재석");
+        assertThat(members.size()).isEqualTo(2);
+    }
 }
