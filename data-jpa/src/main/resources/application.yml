@@ -1,0 +1,14 @@
+spring:
+  profiles:
+    active: dev
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true # 쿼리문을 콘솔에 남기는 옵션 (sout)
+
+logging.level: # 쿼리문을 로그로 남기는 옵션
+  study.datajpa: debug
+  org.hibernate.SQL: debug
