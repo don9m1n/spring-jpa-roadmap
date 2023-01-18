@@ -3,16 +3,28 @@ package study.datajpa.member.repository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
 import study.datajpa.member.entity.Member;
 import study.datajpa.member.entity.MemberDto;
 import study.datajpa.team.entity.Team;
 import study.datajpa.team.repository.TeamRepository;
 
+import javax.print.attribute.standard.PageRanges;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.data.domain.PageRequest.of;
+import static org.springframework.data.domain.Sort.Direction.DESC;
+import static org.springframework.data.domain.Sort.by;
 
 @SpringBootTest
 @Transactional
@@ -136,5 +148,72 @@ public class MemberRepositoryTest {
         assertThat(memberDtos.get(0).getTeamName()).isEqualTo("T1");
         assertThat(memberDtos.get(1).getTeamName()).isEqualTo("DK");
         assertThat(memberDtos.get(2).getTeamName()).isEqualTo("T1");
+    }
+
+    @Test
+    void collectionBindingTest() throws Exception {
+        Member member1 = new Member("김영한");
+        Member member2 = new Member("박은빈");
+        Member member3 = new Member("유재석");
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+
+        List<Member> members = memberRepository.findByNames(Arrays.asList("박은빈", "유재석", "김영한"));
+        assertThat(members.size()).isEqualTo(3);
+    }
+
+    @Test
+    void returnTypeTest() throws Exception {
+        Member member1 = new Member("AAA", 10);
+        Member member2 = new Member("BBB", 10);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        Member member = memberRepository.findMemberByUsername("AAA");
+        System.out.println(member);
+    }
+
+    @Test
+    @Rollback(false)
+    void paging() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            memberRepository.save(new Member("member" + i, i * 10));
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Direction.DESC, "username"));
+        Slice<Member> page = memberRepository.findByAgeGreaterThanEqual(30, pageRequest);
+
+        List<Member> content = page.getContent();
+
+        assertThat(content.size()).isEqualTo(3);
+        //assertThat(page.getTotalPages()).isEqualTo(1); // 총 페이지 개수
+        //assertThat(page.getTotalElements()).isEqualTo(3); // 전체 데이터의 개수
+        assertThat(page.getNumber()).isEqualTo(0); // 현재 페이지 번호 (시작값 0)
+        assertThat(page.isFirst()).isTrue(); // 첫 번째 페이지인가
+        assertThat(page.isLast()).isTrue(); // 마지막 페이지인가
+        assertThat(page.hasNext()).isFalse(); // 다음 페이지가 있는가
+    }
+
+    @Test
+    void paging2() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            memberRepository.save(new Member("member" + i, i * 10));
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Direction.DESC, "username"));
+        Page<Member> byAge = memberRepository.findBy(pageRequest);
+    }
+
+    @Test
+    void paging3() throws Exception {
+        for (int i = 1; i <= 5; i++) {
+            memberRepository.save(new Member("member" + i, i * 10));
+        }
+
+        PageRequest pageRequest = PageRequest.of(0, 3, Sort.by(Direction.DESC, "username"));
+        Page<Member> page = memberRepository.findByAgeGreaterThanEqual(30, pageRequest);
+
+        Page<MemberDto> map = page.map(m -> new MemberDto(m));
     }
 }

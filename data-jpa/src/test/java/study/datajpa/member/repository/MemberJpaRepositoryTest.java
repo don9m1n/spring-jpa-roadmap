@@ -71,4 +71,36 @@ class MemberJpaRepositoryTest {
         assertThat(members.get(0)).isEqualTo(member2);
     }
 
+    @Test
+    void returnTypeTest1() throws Exception {
+        Member member = new Member("AAA");
+        memberJpaRepository.save(member);
+
+        Member findMember = memberJpaRepository.findMemberByUsername("asdad");
+        System.out.println("member = " + findMember);
+    }
+
+    @Test
+    void returnTypeTest2() throws Exception {
+        Member member = new Member("AAA");
+        memberJpaRepository.save(member);
+
+        List<Member> members = memberJpaRepository.findListByUsername("asdad");
+        System.out.println("members = " + members);
+    }
+
+    @Test
+    @Rollback(false)
+    void paging() throws Exception {
+        for (int i = 1; i <= 10; i++) {
+            memberJpaRepository.save(new Member("member" + i, 20));
+        }
+
+        List<Member> memberByPaging = memberJpaRepository.findListByPaging(20, 0, 5);
+        long count = memberJpaRepository.count(20);
+
+        assertThat(memberByPaging.size()).isEqualTo(5);
+        assertThat(count).isEqualTo(10);
+    }
+
 }
