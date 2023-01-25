@@ -216,4 +216,17 @@ public class MemberRepositoryTest {
 
         Page<MemberDto> map = page.map(m -> new MemberDto(m));
     }
+
+    @Test
+    @Rollback(false)
+    void bulkUpdate() throws Exception {
+        for (int i = 1; i <= 10; i++) {
+            memberRepository.save(new Member("member" + i, i * 10));
+        }
+
+        int row = memberRepository.bulkUpdate(60);
+
+        System.out.println(memberRepository.findAll());
+        assertThat(row).isEqualTo(5);
+    }
 }
