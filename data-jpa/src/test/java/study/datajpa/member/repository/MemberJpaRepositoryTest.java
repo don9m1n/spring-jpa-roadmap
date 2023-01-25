@@ -103,4 +103,17 @@ class MemberJpaRepositoryTest {
         assertThat(count).isEqualTo(10);
     }
 
+    @Test
+    @Rollback(false)
+    void bulkUpdate() throws Exception {
+        for (int i = 1; i <= 10; i++) {
+            memberJpaRepository.save(new Member("member" + i, i * 10));
+        }
+
+        int row = memberJpaRepository.bulkAgePlus(50); // 수정!!
+
+        List<Member> members = memberJpaRepository.findAll();
+        assertThat(row).isEqualTo(6);
+    }
+
 }
