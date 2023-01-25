@@ -16,6 +16,7 @@ import study.datajpa.member.entity.MemberDto;
 import study.datajpa.team.entity.Team;
 import study.datajpa.team.repository.TeamRepository;
 
+import javax.persistence.EntityManager;
 import javax.print.attribute.standard.PageRanges;
 import java.util.Arrays;
 import java.util.List;
@@ -35,6 +36,9 @@ public class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @Autowired
+    EntityManager em;
 
     @Test
     @Rollback(false)
@@ -228,5 +232,38 @@ public class MemberRepositoryTest {
 
         System.out.println(memberRepository.findAll());
         assertThat(row).isEqualTo(5);
+    }
+
+    @Test
+    void findMemberLazy() throws Exception {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member1", 20, teamB));
+
+        em.flush();
+        em.clear();
+
+        List<Member> all = memberRepository.findEntityGraphByUsername("member1");
+    }
+
+    @Test
+    void findMemberFetchJoin() throws Exception {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        memberRepository.save(new Member("member1", 10, teamA));
+        memberRepository.save(new Member("member2", 20, teamB));
+        memberRepository.save(new Member("member3", 30));
+
+        em.flush();
+        em.clear();
+
+        List<Member> members = memberRepository.findMemberFetchJoin();
+
+        System.out.println("size = " + members.size());
     }
 }
