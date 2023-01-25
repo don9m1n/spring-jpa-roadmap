@@ -2,7 +2,6 @@ package study.datajpa.member.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -10,11 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import study.datajpa.member.entity.Member;
 import study.datajpa.member.entity.MemberDto;
+import study.datajpa.member.repository.custom.MemberRepositoryCustom;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
     // public abstract 생략
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);

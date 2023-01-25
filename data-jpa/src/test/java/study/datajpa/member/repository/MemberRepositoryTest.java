@@ -13,10 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 import study.datajpa.member.entity.Member;
 import study.datajpa.member.entity.MemberDto;
+import study.datajpa.member.repository.query.MemberQueryRepository;
 import study.datajpa.team.entity.Team;
 import study.datajpa.team.repository.TeamRepository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.print.attribute.standard.PageRanges;
 import java.util.Arrays;
 import java.util.List;
@@ -37,8 +39,11 @@ public class MemberRepositoryTest {
     @Autowired
     TeamRepository teamRepository;
 
-    @Autowired
+    @PersistenceContext
     EntityManager em;
+
+    @Autowired
+    MemberQueryRepository memberQueryRepository;
 
     @Test
     @Rollback(false)
@@ -265,5 +270,28 @@ public class MemberRepositoryTest {
         List<Member> members = memberRepository.findMemberFetchJoin();
 
         System.out.println("size = " + members.size());
+    }
+
+    @Test
+    void customRepositoryTest() throws Exception {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 20));
+        memberRepository.save(new Member("member3", 30));
+
+        List<Member> members = memberRepository.findMemberCustom();
+
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(members.get(0).getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    void queryRepositoryTest() throws Exception {
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 20));
+        memberRepository.save(new Member("member3", 30));
+
+        List<Member> members = memberQueryRepository.findQueryMember();
+        assertThat(members.size()).isEqualTo(3);
+        assertThat(members.get(0).getUsername()).isEqualTo("member1");
     }
 }
