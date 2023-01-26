@@ -8,6 +8,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import study.datajpa.member.entity.Member;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +20,9 @@ class MemberJpaRepositoryTest {
 
     @Autowired
     MemberJpaRepository memberJpaRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     void entityTest() throws Exception {
@@ -114,6 +119,22 @@ class MemberJpaRepositoryTest {
 
         List<Member> members = memberJpaRepository.findAll();
         assertThat(row).isEqualTo(6);
+    }
+
+    @Test
+    void JpaAuditingTest() throws Exception {
+
+        Member member = memberJpaRepository.save(new Member("member1", 10)); // @PrePersist
+
+        Thread.sleep(1000);
+        member.changeName("동민");
+
+        em.flush(); // @PreUpdate
+        em.clear();
+
+        Member findMember = memberJpaRepository.findById(member.getId()).get();
+        System.out.println("생성일 : " + findMember.getCreatedDate());
+        System.out.println("수정일 : " + findMember.getUpdatedDate());
     }
 
 }

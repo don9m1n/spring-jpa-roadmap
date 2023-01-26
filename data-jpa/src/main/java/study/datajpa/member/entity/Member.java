@@ -3,6 +3,7 @@ package study.datajpa.member.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import study.datajpa.base.JpaBaseEntity;
 import study.datajpa.team.entity.Team;
 
 import javax.persistence.*;
@@ -15,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @ToString(exclude = {"team"})
-public class Member {
+public class Member extends JpaBaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -41,6 +42,10 @@ public class Member {
         if (team != null) {
             changeTeam(team);
         }
+    }
+
+    public void changeName(String username) {
+        this.username = username;
     }
 
     public void changeTeam(Team team) {
