@@ -3,6 +3,7 @@ package study.datajpa.member.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import study.datajpa.base.BaseEntity;
 import study.datajpa.base.JpaBaseEntity;
 import study.datajpa.team.entity.Team;
 
@@ -16,7 +17,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 @ToString(exclude = {"team"})
-public class Member extends JpaBaseEntity {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)

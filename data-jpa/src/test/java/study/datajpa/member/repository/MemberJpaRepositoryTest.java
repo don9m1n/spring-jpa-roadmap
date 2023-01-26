@@ -1,6 +1,5 @@
 package study.datajpa.member.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -134,7 +133,7 @@ class MemberJpaRepositoryTest {
 
         Member findMember = memberJpaRepository.findById(member.getId()).get();
         System.out.println("생성일 : " + findMember.getCreatedDate());
-        System.out.println("수정일 : " + findMember.getUpdatedDate());
+        System.out.println("수정일 : " + findMember.getLastModifiedDate());
     }
 
 }

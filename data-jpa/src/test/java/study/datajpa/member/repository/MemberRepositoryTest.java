@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
 import study.datajpa.member.entity.Member;
 import study.datajpa.member.entity.MemberDto;
 import study.datajpa.member.repository.query.MemberQueryRepository;
@@ -19,14 +18,11 @@ import study.datajpa.team.repository.TeamRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.print.attribute.standard.PageRanges;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.domain.PageRequest.of;
-import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.domain.Sort.by;
 
 @SpringBootTest
@@ -293,5 +289,22 @@ public class MemberRepositoryTest {
         List<Member> members = memberQueryRepository.findQueryMember();
         assertThat(members.size()).isEqualTo(3);
         assertThat(members.get(0).getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    @Rollback(false)
+    void AuditingTest() throws Exception {
+
+        Member member = memberRepository.save(new Member("member1", 10));
+
+        Thread.sleep(1000);
+        member.changeName("동민");
+
+        em.flush();
+        em.clear();
+
+        Member findMember = memberRepository.findById(member.getId()).get();
+        System.out.println("생성일 : " + findMember.getCreatedDate());
+        System.out.println("수정일 : " + findMember.getLastModifiedDate());
     }
 }
