@@ -1,5 +1,6 @@
 package com.study.querydsl;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.study.querydsl.entity.Member;
 import com.study.querydsl.entity.QMember;
@@ -11,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.study.querydsl.entity.QMember.member;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -91,5 +94,29 @@ public class QuerydslBasicTest {
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
         assertThat(findMember.getAge()).isEqualTo(10);
+    }
+
+    @Test
+    void resultFetch() {
+        List<Member> fetch = query
+                .selectFrom(member)
+                .fetch();
+
+        Member fetchOne = query
+                .selectFrom(member)
+                .fetchOne();
+
+        // limit 1 fetchOne
+        Member fetchFirst = query
+                .selectFrom(member)
+                .fetchFirst();
+
+        // deprecated!
+        QueryResults<Member> results = query
+                .selectFrom(member)
+                .fetchResults();
+
+        results.getTotal();
+        List<Member> content = results.getResults();
     }
 }
