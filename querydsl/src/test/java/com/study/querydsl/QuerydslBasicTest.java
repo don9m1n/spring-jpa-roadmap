@@ -64,4 +64,32 @@ public class QuerydslBasicTest {
 
         assertThat(findMember.getUsername()).isEqualTo("member1");
     }
+
+    @Test
+    void search() {
+        Member findMember = query
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1")
+                        .and(member.age.between(10, 30))
+                )
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+        assertThat(findMember.getAge()).isEqualTo(10);
+    }
+
+    @Test
+    void searchAndParam() {
+        Member findMember = query
+                .selectFrom(member)
+                .where( // 중간에 null이 들어가면 무시함. -> 동적 쿼리 작성 굿
+                        member.username.eq("member1"),
+                        member.age.eq(10)
+                )
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+        assertThat(findMember.getAge()).isEqualTo(10);
+    }
 }
