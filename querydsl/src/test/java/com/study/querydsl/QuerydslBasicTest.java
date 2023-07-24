@@ -119,4 +119,34 @@ public class QuerydslBasicTest {
         results.getTotal();
         List<Member> content = results.getResults();
     }
+
+    /**
+     * 1. 회원 나이 내림차순
+     * 2. 회원 이름 올림차순
+     * 단 2에서 회원 이름이 없으면 마지막에 출력
+     */
+    @Test
+    void sort() {
+
+        em.persist(new Member(null, 100));
+        em.persist(new Member("member5", 100));
+        em.persist(new Member("member6", 100));
+
+        List<Member> members = query
+                .selectFrom(QMember.member)
+                .where(member.age.eq(100))
+                .orderBy(
+                        QMember.member.age.desc(),
+                        QMember.member.username.asc().nullsLast()
+                )
+                .fetch();
+
+        Member member5 = members.get(0);
+        Member member6 = members.get(1);
+        Member memberNull = members.get(2);
+
+        assertThat(member5.getUsername()).isEqualTo("member5");
+        assertThat(member6.getUsername()).isEqualTo("member6");
+        assertThat(memberNull.getUsername()).isNull();
+    }
 }
