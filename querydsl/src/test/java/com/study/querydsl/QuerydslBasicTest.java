@@ -149,4 +149,28 @@ public class QuerydslBasicTest {
         assertThat(member6.getUsername()).isEqualTo("member6");
         assertThat(memberNull.getUsername()).isNull();
     }
+
+    @Test
+    void paging1() {
+        List<Member> members = query
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1) // 2번째 부터
+                .limit(2) // 2건 조회
+                .fetch();
+
+        assertThat(members.size()).isEqualTo(2);
+    }
+
+    @Test
+    void paging2() {
+        List<Member> members = query
+                .selectFrom(member)
+                .orderBy(member.username.desc())
+                .offset(1) // 2번째 부터
+                .limit(2) // 2건 조회
+                .fetch();
+
+        assertThat(members.size()).isEqualTo(2);
+    }
 }
